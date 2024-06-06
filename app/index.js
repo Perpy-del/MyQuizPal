@@ -2,9 +2,13 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const accessLogStream = require('../config/logger');
+require('dotenv').config();
+const connectToDb = require('../config/database')
 
 const indexRouter = require('../routes/index');
 const usersRouter = require('../routes/users');
+
+connectToDb();
 
 const app = express();
 
