@@ -5,8 +5,8 @@ const accessLogStream = require('../config/logger');
 require('dotenv').config();
 const connectToDb = require('../config/database')
 
-const indexRouter = require('../routes/index');
-const usersRouter = require('../routes/users');
+const indexRouter = require('./http/routes/index');
+const usersRouter = require('./http/routes/users');
 
 connectToDb();
 
