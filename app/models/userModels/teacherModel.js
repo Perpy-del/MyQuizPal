@@ -17,13 +17,22 @@ const teacherSchema = new Schema(
         },
         email_address: {
             type: String,
-            required: true
+            required: true,
+            lowercase: true,
+            unique: true
         },
         phone_number: Number,
         password: {
             type: String,
             required: true
         },
+        confirm_password: {
+            type: String,
+            required: true
+        },
+    },
+    {
+        timestamps: true,
     }
 )
 

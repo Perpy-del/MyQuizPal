@@ -5,8 +5,7 @@ const accessLogStream = require('../config/logger');
 require('dotenv').config();
 const connectToDb = require('../config/database')
 
-const indexRouter = require('./http/routes/index');
-const usersRouter = require('./http/routes/users');
+const authRouter = require('./http/routes/auth');
 
 connectToDb();
 
@@ -17,7 +16,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.get('/api', function(req, res) {
+    res.send('Welcome to MyQuizPal!!! 😎');
+  });
+
+app.use(authRouter);
 
 module.exports = app;

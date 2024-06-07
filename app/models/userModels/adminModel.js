@@ -1,4 +1,3 @@
-const { timeStamp } = require('console');
 const mongoose = require('mongoose');
 
 const { Schema, model } = mongoose;
@@ -21,13 +20,18 @@ const adminSchema = new Schema(
       type: String,
       required: true,
     },
-    email_address: {
+    email: {
       type: String,
       required: true,
       lowercase: true,
+      unique: true,
     },
     phone_number: Number,
     password: {
+      type: String,
+      required: true,
+    },
+    confirm_password: {
       type: String,
       required: true,
     },
