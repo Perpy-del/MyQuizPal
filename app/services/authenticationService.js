@@ -6,6 +6,8 @@ const ResourceExists = require('../errors/ResourceExists');
 const bcrypt = require('bcrypt');
 const randomId = require('../utilities/generateId');
 const BadUserRequestError = require('../errors/BadUserRequestError');
+const AuthenticationError = require('../errors/AuthenticationError');
+const hash = require('../utilities/hash');
 
 async function registerAdmin(adminData) {
     const existingAdmin = await Admin.findOne({ email: adminData.email })
@@ -19,8 +21,7 @@ async function registerAdmin(adminData) {
         throw new BadUserRequestError("The passwords do not match. Please try again")
     }  
 
-    const saltRound = Number(process.env.DEV_BCRYPT_SALT_ROUND);
-    let passwordHash = bcrypt.hashSync(adminData.password, saltRound)
+    const passwordHash = hash.hashPassword(adminData.password)
 
     const newAdmin = await Admin.create({
         id: randomId(),
@@ -30,11 +31,11 @@ async function registerAdmin(adminData) {
         organisation_name: adminData.organisation,
         phone_number: adminData.phoneNumber,
         password: passwordHash,
-        confirm_password: passwordHash
     })
 
     const newOrganisation = await Organisation.create({
         organisation_name: adminData.organisation,
+        admin_id: newAdmin.id,
     })
 
     const data = {
@@ -45,6 +46,44 @@ async function registerAdmin(adminData) {
     return data;
 }
 
+async function addTeacher(teacherData) {
+    const existingAdmin = await Admin.findOne({ email: teacherData.adminEmail });
+
+    if (!existingAdmin) {
+        throw new AuthenticationError('Admin is not found and is not authorized to perform this operation')
+    }
+
+    const {organisation_name, first_name, last_name} = existingAdmin;
+
+    const existingEmail = teacherData.email || adminEmail;
+
+    const existingTeacher = await Teacher.findOne({ email: existingEmail });
+
+    if (existingTeacher) {
+        throw new ResourceExists("User with the provided credentials already exists")
+    }
+
+    if (teacherData.password !== teacherData.confirmPassword) {
+        throw new BadUserRequestError("The passwords do not match. Please try again")
+    }  
+
+    const passwordHash = hash.hashPassword(teacherData.password)
+
+    const newTeacher = await Teacher.create({
+        id: randomId(),
+        first_name: teacherData.firstName,
+        last_name: teacherData.lastName,
+        admin_in_charge: `${first_name} ${last_name}`,
+        email: teacherData.email,
+        organisation_name: organisation_name,
+        phone_number: teacherData.phoneNumber,
+        password: passwordHash,
+    })
+
+   return newTeacher;
+}
+
 module.exports = {
-    registerAdmin
+    registerAdmin,
+    addTeacher,
 }

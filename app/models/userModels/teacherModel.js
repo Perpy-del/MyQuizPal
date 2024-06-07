@@ -15,18 +15,16 @@ const teacherSchema = new Schema(
             type: String,
             required: true
         },
-        email_address: {
+        email: {
             type: String,
             required: true,
             lowercase: true,
             unique: true
         },
         phone_number: Number,
+        organisation: String,
+        admin_in_charge: String,
         password: {
-            type: String,
-            required: true
-        },
-        confirm_password: {
             type: String,
             required: true
         },

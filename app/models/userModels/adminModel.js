@@ -31,10 +31,6 @@ const adminSchema = new Schema(
       type: String,
       required: true,
     },
-    confirm_password: {
-      type: String,
-      required: true,
-    },
   },
   { timeStamp: true }
 );

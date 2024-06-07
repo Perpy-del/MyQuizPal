@@ -6,9 +6,9 @@ const organisationSchema = new Schema({
     type: String,
     required: true,
   },
-  adminId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admin'
+  admin_id: {
+    type: String,
+    required: true,
   }
 }, {timestamps: true});
 
