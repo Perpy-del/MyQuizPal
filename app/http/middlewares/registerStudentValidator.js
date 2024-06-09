@@ -5,6 +5,7 @@ function registerStudentValidator(request, response, next) {
         firstName: Joi.string().trim().min(3).max(50),
         lastName: Joi.string().trim().min(3).max(50),
         email: Joi.string().trim().required().email(),
+        role: Joi.string(),
         phoneNumber: Joi.string(),
         password: Joi.string().trim().required().min(8).max(50),
         confirmPassword: Joi.string().trim().required().min(8).max(50),

@@ -3,16 +3,15 @@ const Student = require('../models/userModels/studentModel');
 const Admin = require('../models/userModels/adminModel');
 const Organisation = require('../models/orgModels/organisationModel');
 const ResourceExists = require('../errors/ResourceExists');
-const bcrypt = require('bcrypt');
 const randomId = require('../utilities/generateId');
 const BadUserRequestError = require('../errors/BadUserRequestError');
 const AuthenticationError = require('../errors/AuthenticationError');
 const hash = require('../utilities/hash');
 
 async function registerAdmin(adminData) {
-  const existingAdmin = await Admin.findOne({ email: studentData.email });
-  const existingTeacher = await Teacher.findOne({ email: studentData.email });
-  const existingStudent = await Student.findOne({ email: studentData.email });
+  const existingAdmin = await Admin.findOne({ email: adminData.email });
+  const existingTeacher = await Teacher.findOne({ email: adminData.email });
+  const existingStudent = await Student.findOne({ email: adminData.email });
 
   const existingUser = existingAdmin || existingTeacher || existingStudent;
 
@@ -30,6 +29,7 @@ async function registerAdmin(adminData) {
 
   const newAdmin = await Admin.create({
     id: randomId(),
+    role: 'admin',
     first_name: adminData.firstName,
     last_name: adminData.lastName,
     email: adminData.email,
@@ -82,6 +82,7 @@ async function addTeacher(teacherData) {
 
   const newTeacher = await Teacher.create({
     id: randomId(),
+    role: 'teacher',
     first_name: teacherData.firstName,
     last_name: teacherData.lastName,
     admin_in_charge: `${first_name} ${last_name}`,
@@ -95,9 +96,9 @@ async function addTeacher(teacherData) {
 }
 
 async function registerTeacher(teacherData) {
-  const existingAdmin = await Admin.findOne({ email: studentData.email });
-  const existingTeacher = await Teacher.findOne({ email: studentData.email });
-  const existingStudent = await Student.findOne({ email: studentData.email });
+  const existingAdmin = await Admin.findOne({ email: teacherData.email });
+  const existingTeacher = await Teacher.findOne({ email: teacherData.email });
+  const existingStudent = await Student.findOne({ email: teacherData.email });
 
   const existingUser = existingAdmin || existingTeacher || existingStudent;
 
@@ -115,6 +116,7 @@ async function registerTeacher(teacherData) {
 
   const newTeacher = await Teacher.create({
     id: randomId(),
+    role: 'teacher',
     first_name: teacherData.firstName,
     last_name: teacherData.lastName,
     email: teacherData.email,
@@ -146,6 +148,7 @@ async function registerStudent(studentData) {
 
   const newStudent = await Student.create({
     id: randomId(),
+    role: 'student',
     first_name: studentData.firstName,
     last_name: studentData.lastName,
     email: studentData.email,
