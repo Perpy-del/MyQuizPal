@@ -10,12 +10,14 @@ const AuthenticationError = require('../errors/AuthenticationError');
 const hash = require('../utilities/hash');
 
 async function registerAdmin(adminData) {
-  const existingAdmin = await Admin.findOne({ email: adminData.email });
+  const existingAdmin = await Admin.findOne({ email: studentData.email });
+  const existingTeacher = await Teacher.findOne({ email: studentData.email });
+  const existingStudent = await Student.findOne({ email: studentData.email });
 
-  if (existingAdmin) {
-    throw new ResourceExists(
-      'A user with the provided email address already exists'
-    );
+  const existingUser = existingAdmin || existingTeacher || existingStudent;
+
+  if (existingUser) {
+    throw new ResourceExists('User with the provided credentials already exists')
   }
 
   if (adminData.password !== adminData.confirmPassword) {
@@ -93,9 +95,13 @@ async function addTeacher(teacherData) {
 }
 
 async function registerTeacher(teacherData) {
-  const existingTeacher = await Teacher.findOne({ email: teacherData.email });
+  const existingAdmin = await Admin.findOne({ email: studentData.email });
+  const existingTeacher = await Teacher.findOne({ email: studentData.email });
+  const existingStudent = await Student.findOne({ email: studentData.email });
 
-  if (existingTeacher) {
+  const existingUser = existingAdmin || existingTeacher || existingStudent;
+
+  if (existingUser) {
     throw new ResourceExists('User with the provided credentials already exists')
   }
 
@@ -119,6 +125,37 @@ async function registerTeacher(teacherData) {
   return newTeacher;
 }
 
+async function registerStudent(studentData) {
+  const existingAdmin = await Admin.findOne({ email: studentData.email });
+  const existingTeacher = await Teacher.findOne({ email: studentData.email });
+  const existingStudent = await Student.findOne({ email: studentData.email });
+
+  const existingUser = existingAdmin || existingTeacher || existingStudent;
+
+  if (existingUser) {
+    throw new ResourceExists('User with the provided credentials already exists')
+  }
+
+  if (studentData.password !== studentData.confirmPassword) {
+    throw new BadUserRequestError(
+      'The passwords do not match. Please try again'
+    );
+  }
+
+  const passwordHash = hash.hashPassword(studentData.password);
+
+  const newStudent = await Student.create({
+    id: randomId(),
+    first_name: studentData.firstName,
+    last_name: studentData.lastName,
+    email: studentData.email,
+    phone_number: studentData.phoneNumber,
+    password: passwordHash,
+  });
+
+  return newStudent;
+}
+
 async function loginTeacher(teacherData) {
   const existingTeacher = await Teacher.findOne({ email: teacherData.email });
 
@@ -133,6 +170,7 @@ async function loginTeacher(teacherData) {
 
 module.exports = {
   registerAdmin,
+  registerTeacher,
+  registerStudent,
   addTeacher,
-  registerTeacher
 };

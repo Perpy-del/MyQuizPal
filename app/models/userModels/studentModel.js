@@ -15,7 +15,7 @@ const studentSchema = new Schema(
       type: String,
       required: true,
     },
-    email_address: {
+    email: {
       type: String,
       required: true,
       lowercase: true,
@@ -23,10 +23,6 @@ const studentSchema = new Schema(
     },
     phone_number: String,
     password: {
-      type: String,
-      required: true,
-    },
-    confirm_password: {
       type: String,
       required: true,
     },
