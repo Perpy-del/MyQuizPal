@@ -75,7 +75,42 @@ async function addNewTeacher(request, response) {
   }
 }
 
+async function createNewTeacher(request, response) {
+  try {
+    const result = await service.registerTeacher(request.body);
+
+    const {
+      id,
+      first_name,
+      last_name,
+      email,
+      phone_number,
+      created_at,
+      updated_at,
+    } = result;
+
+    response.json({
+      data: {
+        teacherId: id,
+        firstName: first_name,
+        lastName: last_name,
+        email: email,
+        phoneNumber: phone_number,
+        createdAt: created_at,
+        updatedAt: updated_at,
+      },
+    });
+  } catch (error) {
+    console.log('Error querying database: ', error);
+
+    response
+      .status(error.statusCode ?? 500)
+      .json({ data: { error: `${error.message}` } });
+  }
+}
+
 module.exports = {
     createNewAdmin,
-    addNewTeacher
+    addNewTeacher,
+    createNewTeacher
 }

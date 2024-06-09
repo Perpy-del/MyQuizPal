@@ -19,9 +19,8 @@ const teacherSchema = new Schema(
             type: String,
             required: true,
             lowercase: true,
-            unique: true
         },
-        phone_number: Number,
+        phone_number: String,
         organisation: String,
         admin_in_charge: String,
         password: {
