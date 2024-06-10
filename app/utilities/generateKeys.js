@@ -12,13 +12,13 @@ const FilesystemError = require('../errors/FileSystemError');
 async function generateKeys(forceWrite = false) {
   const baseDirectory = 'storage/keys';
   const keyType = process.env.JWT_KEY_TYPE ?? 'rsa';
-  const publicKeyFile = path.resolve(baseDirectory, './publicKey.pem');
-  const privateKeyFile = path.resolve(baseDirectory, './privateKey.pem');
+  const publicKeyFile = path.resolve(baseDirectory, STAGING_JWT_PUBLIC_FILE);
+  const privateKeyFile = path.resolve(baseDirectory, STAGING_JWT_PRIVATE_FILE);
 
   const options = {
     modulusLength: 4096,
     publicKeyEncoding: { type: 'spki', format: 'pem' },
-    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
+    privateKeyEncoding: { type: 'pkcs8', format: 'pem', passphrase: '' },
   };
 
   if (!forceWrite) {

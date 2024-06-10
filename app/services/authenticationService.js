@@ -7,6 +7,8 @@ const randomId = require('../utilities/generateId');
 const BadUserRequestError = require('../errors/BadUserRequestError');
 const AuthenticationError = require('../errors/AuthenticationError');
 const hash = require('../utilities/hash');
+const jwt = require('jsonwebtoken');
+const { randomBytes } = require('crypto');
 
 async function registerAdmin(adminData) {
   const existingAdmin = await Admin.findOne({ email: adminData.email });
@@ -163,12 +165,26 @@ async function loginTeacher(teacherData) {
   const existingTeacher = await Teacher.findOne({ email: teacherData.email });
 
   if (!existingTeacher) {
-    throw new ResourceExists('User credentials do not match our records.')
+    throw new AuthenticationError('User credentials do not match our records.')
   }
 
   const passwordConfirm = hash.compareHashPassword(teacherData.password, existingTeacher.password)
 
-  console.log(passwordConfirm)
+  if (!passwordConfirm) {
+    throw new AuthenticationError('User credentials do not match our records.')
+  }
+
+  const payload = {
+    email: existingTeacher.email,
+    id: existingTeacher.id
+  }
+
+  const token = jwt.sign(payload, process.env.STAGING_APP_SECRET, {expiresIn: Number(process.env.JWT_EXPIRATION)});
+
+  return {
+    token,
+    existingTeacher
+  }
 }
 
 module.exports = {
@@ -176,4 +192,5 @@ module.exports = {
   registerTeacher,
   registerStudent,
   addTeacher,
+  loginTeacher
 };
