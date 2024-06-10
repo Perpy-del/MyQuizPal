@@ -9,6 +9,7 @@ const AuthenticationError = require('../errors/AuthenticationError');
 const hash = require('../utilities/hash');
 const jwt = require('jsonwebtoken');
 const { addSeconds, getTime, format, formatISO } = require('date-fns');
+const { createNewTeacher } = require('../http/controllers/authenticationController');
 
 async function registerAdmin(adminData) {
   const existingAdmin = await Admin.findOne({ email: adminData.email });
@@ -47,9 +48,21 @@ async function registerAdmin(adminData) {
     admin_id: newAdmin.id,
   });
 
+  const { id, first_name, last_name, email, role, phone_number, organisation_name, created_at, updated_at } = newAdmin;
+
+  const organisation_id = newOrganisation._id;
+
   const data = {
-    org_profile: newOrganisation,
-    admin_profile: newAdmin,
+    adminId: id,
+    firstName: first_name,
+    lastName: last_name,
+    email: email,
+    role: role,
+    organisation: organisation_name,
+    organisationId: organisation_id,
+    phoneNumber: phone_number,
+    createdAt: created_at,
+    updatedAt: updated_at,
   };
 
   return data;
@@ -96,7 +109,22 @@ async function addTeacher(teacherData) {
     password: passwordHash,
   });
 
-  return newTeacher;
+  const { id, email, role, phone_number, admin_in_charge, created_at, updated_at } = newTeacher;
+
+  const data = {
+    teacherId: id,
+    firstName: newTeacher.first_name,
+    lastName: newTeacher.last_name,
+    email: email,
+    role: role,
+    organisationName: newTeacher.organisation_name,
+    adminInCharge: admin_in_charge,
+    phoneNumber: phone_number,
+    createdAt: created_at,
+    updatedAt: updated_at,
+  }
+
+  return data;
 }
 
 async function registerTeacher(teacherData) {
@@ -130,7 +158,20 @@ async function registerTeacher(teacherData) {
     password: passwordHash,
   });
 
-  return newTeacher;
+  const { id, first_name, last_name, email, role, phone_number, created_at, updated_at } = newTeacher;
+
+  const data = {
+    teacherId: id,
+    firstName: first_name,
+    lastName: last_name,
+    email: email,
+    role: role,
+    phoneNumber: phone_number,
+    createdAt: created_at,
+    updatedAt: updated_at,
+  }
+
+  return data;
 }
 
 async function registerStudent(studentData) {
@@ -164,7 +205,20 @@ async function registerStudent(studentData) {
     password: passwordHash,
   });
 
-  return newStudent;
+  const { id, first_name, last_name, email, role, phone_number, created_at, updated_at } = newStudent;
+
+  const data = {
+    studentId: id,
+    firstName: first_name,
+    lastName: last_name,
+    email: email,
+    role: role,
+    phoneNumber: phone_number,
+    createdAt: created_at,
+    updatedAt: updated_at,
+  }
+
+  return data;
 }
 
 async function loginUser(userData) {
