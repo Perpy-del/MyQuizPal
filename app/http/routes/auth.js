@@ -9,7 +9,7 @@ const loginValidator = require('../middlewares/loginValidator');
 router.post('/api/register/admin', validateAdmin, authController.createNewAdmin);
 router.post('/api/register/teacher', validateAdminTeacher, authController.createNewTeacher);
 router.post('/api/register/student', registerStudentValidator, authController.createNewStudent);
-router.post('/api/login/teacher', loginValidator, authController.teacherLoginRequest);
+router.post('/api/login', loginValidator, authController.userLoginRequest);
 router.post('/api/add-teacher', validateAdminTeacher, authController.addNewTeacher);
 
 module.exports = router;

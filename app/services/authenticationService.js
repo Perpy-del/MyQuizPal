@@ -8,7 +8,6 @@ const BadUserRequestError = require('../errors/BadUserRequestError');
 const AuthenticationError = require('../errors/AuthenticationError');
 const hash = require('../utilities/hash');
 const jwt = require('jsonwebtoken');
-const { randomBytes } = require('crypto');
 
 async function registerAdmin(adminData) {
   const existingAdmin = await Admin.findOne({ email: adminData.email });
@@ -18,7 +17,9 @@ async function registerAdmin(adminData) {
   const existingUser = existingAdmin || existingTeacher || existingStudent;
 
   if (existingUser) {
-    throw new ResourceExists('User with the provided credentials already exists')
+    throw new ResourceExists(
+      'User with the provided credentials already exists'
+    );
   }
 
   if (adminData.password !== adminData.confirmPassword) {
@@ -105,7 +106,9 @@ async function registerTeacher(teacherData) {
   const existingUser = existingAdmin || existingTeacher || existingStudent;
 
   if (existingUser) {
-    throw new ResourceExists('User with the provided credentials already exists')
+    throw new ResourceExists(
+      'User with the provided credentials already exists'
+    );
   }
 
   if (teacherData.password !== teacherData.confirmPassword) {
@@ -137,7 +140,9 @@ async function registerStudent(studentData) {
   const existingUser = existingAdmin || existingTeacher || existingStudent;
 
   if (existingUser) {
-    throw new ResourceExists('User with the provided credentials already exists')
+    throw new ResourceExists(
+      'User with the provided credentials already exists'
+    );
   }
 
   if (studentData.password !== studentData.confirmPassword) {
@@ -161,30 +166,88 @@ async function registerStudent(studentData) {
   return newStudent;
 }
 
+async function loginUser(userData) {
+  const existingAdmin = await Admin.findOne({ email: userData.email });
+  const existingTeacher = await Teacher.findOne({ email: userData.email });
+  const existingStudent = await Student.findOne({ email: userData.email });
+
+  const existingUser = existingAdmin || existingTeacher || existingStudent;
+
+  if (!existingUser) {
+    throw new AuthenticationError('User credentials do not match our records.');
+  }
+
+  const passwordConfirm = hash.compareHashPassword(
+    userData.password,
+    existingUser.password
+  );
+
+  if (!passwordConfirm) {
+    throw new AuthenticationError('User credentials do not match our records.');
+  }
+
+  const organisation = await Organisation.findOne({
+    organisation_name: existingUser.organisation_name,
+  });
+
+  const payload = {
+    email: existingUser.email,
+    id: existingUser.id,
+  };
+
+  const token = jwt.sign(payload, process.env.STAGING_APP_SECRET, {
+    expiresIn: Number(process.env.JWT_EXPIRATION),
+    issuer: process.env.DEV_JWT_ISSUER,
+  });
+
+  const data = {
+    userId: existingUser.id,
+    firstName: existingUser.first_name,
+    lastName: existingUser.last_name,
+    email: existingUser.email,
+    role: existingUser.role,
+    phoneNumber: existingUser.phone_number,
+    createdAt: existingUser.created_at,
+    updatedAt: existingUser.updated_at,
+    organisation: existingUser.organisation_name || '',
+    organisationId: organisation?._id || '',
+    adminInCharge: existingUser.admin_in_charge || '',
+    token: token,
+  };
+
+  return data;
+}
+
 async function loginTeacher(teacherData) {
   const existingTeacher = await Teacher.findOne({ email: teacherData.email });
 
   if (!existingTeacher) {
-    throw new AuthenticationError('User credentials do not match our records.')
+    throw new AuthenticationError('User credentials do not match our records.');
   }
 
-  const passwordConfirm = hash.compareHashPassword(teacherData.password, existingTeacher.password)
+  const passwordConfirm = hash.compareHashPassword(
+    teacherData.password,
+    existingTeacher.password
+  );
 
   if (!passwordConfirm) {
-    throw new AuthenticationError('User credentials do not match our records.')
+    throw new AuthenticationError('User credentials do not match our records.');
   }
 
   const payload = {
     email: existingTeacher.email,
-    id: existingTeacher.id
-  }
+    id: existingTeacher.id,
+  };
 
-  const token = jwt.sign(payload, process.env.STAGING_APP_SECRET, {expiresIn: Number(process.env.JWT_EXPIRATION)});
+  const token = jwt.sign(payload, process.env.STAGING_APP_SECRET, {
+    expiresIn: Number(process.env.JWT_EXPIRATION),
+    issuer: process.env.DEV_JWT_ISSUER,
+  });
 
   return {
     token,
-    existingTeacher
-  }
+    existingTeacher,
+  };
 }
 
 module.exports = {
@@ -192,5 +255,5 @@ module.exports = {
   registerTeacher,
   registerStudent,
   addTeacher,
-  loginTeacher
+  loginUser,
 };

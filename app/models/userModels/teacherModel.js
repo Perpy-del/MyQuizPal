@@ -25,7 +25,7 @@ const teacherSchema = new Schema(
       required: true,
     },
     phone_number: String,
-    organisation: String,
+    organisation_name: String,
     admin_in_charge: String,
     password: {
       type: String,

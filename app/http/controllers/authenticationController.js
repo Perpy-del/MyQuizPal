@@ -63,7 +63,7 @@ async function addNewTeacher(request, response) {
         lastName: last_name,
         email: email,
         role: role,
-        organisation: organisation_name,
+        organisationName: organisation_name,
         adminInCharge: admin_in_charge,
         phoneNumber: phone_number,
         createdAt: created_at,
@@ -151,25 +151,14 @@ async function createNewStudent(request, response) {
   }
 }
 
-async function teacherLoginRequest(request, response) {
+async function userLoginRequest(request, response) {
   try {
-    const result = await service.loginTeacher(request.body);
-
-    const { first_name, last_name, email, role, created_at, updated_at, id, phone_number } = result.existingTeacher;
+    const result = await service.loginUser(request.body);
 
     response.json({
-      data: {
-        studentId: id,
-        firstName: first_name,
-        lastName: last_name,
-        email: email,
-        role: role,
-        phoneNumber: phone_number,
-        createdAt: created_at,
-        updatedAt: updated_at,
-        token: result.token,
-      },
+      data: result
     })
+
   } catch (error) {
     console.log('Error querying database: ', error);
 
@@ -184,5 +173,5 @@ module.exports = {
   addNewTeacher,
   createNewTeacher,
   createNewStudent,
-  teacherLoginRequest
+  userLoginRequest
 };
