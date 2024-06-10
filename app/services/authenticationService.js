@@ -218,37 +218,37 @@ async function loginUser(userData) {
   return data;
 }
 
-async function loginTeacher(teacherData) {
-  const existingTeacher = await Teacher.findOne({ email: teacherData.email });
+// async function loginTeacher(teacherData) {
+//   const existingTeacher = await Teacher.findOne({ email: teacherData.email });
 
-  if (!existingTeacher) {
-    throw new AuthenticationError('User credentials do not match our records.');
-  }
+//   if (!existingTeacher) {
+//     throw new AuthenticationError('User credentials do not match our records.');
+//   }
 
-  const passwordConfirm = hash.compareHashPassword(
-    teacherData.password,
-    existingTeacher.password
-  );
+//   const passwordConfirm = hash.compareHashPassword(
+//     teacherData.password,
+//     existingTeacher.password
+//   );
 
-  if (!passwordConfirm) {
-    throw new AuthenticationError('User credentials do not match our records.');
-  }
+//   if (!passwordConfirm) {
+//     throw new AuthenticationError('User credentials do not match our records.');
+//   }
 
-  const payload = {
-    email: existingTeacher.email,
-    id: existingTeacher.id,
-  };
+//   const payload = {
+//     email: existingTeacher.email,
+//     id: existingTeacher.id,
+//   };
 
-  const token = jwt.sign(payload, process.env.STAGING_APP_SECRET, {
-    expiresIn: Number(process.env.JWT_EXPIRATION),
-    issuer: process.env.DEV_JWT_ISSUER,
-  });
+//   const token = jwt.sign(payload, process.env.STAGING_APP_SECRET, {
+//     expiresIn: Number(process.env.JWT_EXPIRATION),
+//     issuer: process.env.DEV_JWT_ISSUER,
+//   });
 
-  return {
-    token,
-    existingTeacher,
-  };
-}
+//   return {
+//     token,
+//     existingTeacher,
+//   };
+// }
 
 module.exports = {
   registerAdmin,
