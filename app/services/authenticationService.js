@@ -8,6 +8,7 @@ const BadUserRequestError = require('../errors/BadUserRequestError');
 const AuthenticationError = require('../errors/AuthenticationError');
 const hash = require('../utilities/hash');
 const jwt = require('jsonwebtoken');
+const { addSeconds, getTime, format, formatISO } = require('date-fns');
 
 async function registerAdmin(adminData) {
   const existingAdmin = await Admin.findOne({ email: adminData.email });
@@ -190,13 +191,15 @@ async function loginUser(userData) {
     organisation_name: existingUser.organisation_name,
   });
 
+  const expiryDate = addSeconds(new Date(), process.env.JWT_EXPIRATION);
+
   const payload = {
+    exp: Math.floor(getTime(expiryDate) / 1000),
     email: existingUser.email,
     id: existingUser.id,
   };
 
   const token = jwt.sign(payload, process.env.STAGING_APP_SECRET, {
-    expiresIn: Number(process.env.JWT_EXPIRATION),
     issuer: process.env.DEV_JWT_ISSUER,
   });
 
@@ -213,9 +216,14 @@ async function loginUser(userData) {
     organisationId: organisation?._id || '',
     adminInCharge: existingUser.admin_in_charge || '',
     token: token,
+    tokenExpiresAt: formatISO(expiryDate)
   };
 
   return data;
+}
+
+async function resetPassword(email) {
+
 }
 
 // async function loginTeacher(teacherData) {
