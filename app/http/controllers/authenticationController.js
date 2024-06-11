@@ -80,7 +80,9 @@ async function passwordResetRequest(request, response) {
   try {
     const result = await service.resetPassword(request.body.email);
 
-    console.log(result);
+    response.json({
+      data: result,
+    })
   } catch (error) {
     console.log('Error querying database: ', error);
 

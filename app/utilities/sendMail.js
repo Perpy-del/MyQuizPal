@@ -1,15 +1,17 @@
 const nodemailer = require("nodemailer");
-const url = require("url");
+// const url = require("url");
 const fs = require("fs");
+const path = require("path");
+const handlebars = require("handlebars");
 
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+// const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
-async function sendMail(email, subject, payload, templateFile) {
+async function sendEmail(email, subject, payload, templateFile) {
     try {
         const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          host: "smtp.gmail.com",
-          port: 587,
+          service: process.env.NODEMAILER_SERVICE,
+          host: process.env.NODEMAILER_HOST,
+          port: process.env.NODEMAILER_PORT,
           secure: false,
           auth: {
             user: process.env.NODEMAILER_USER,
@@ -17,7 +19,8 @@ async function sendMail(email, subject, payload, templateFile) {
           },
         });
 
-        const compiledTemplate = fs.readFileSync(path.join(__dirname, templateFile), 'utf8');
+        const source = fs.readFileSync(path.join(__dirname, templateFile), 'utf8');
+        const compiledTemplate = handlebars.compile(source);
         const mailOptions = {
             from: {
                 name: "MyQuizPal",
@@ -44,5 +47,5 @@ async function sendMail(email, subject, payload, templateFile) {
 }
 
 module.exports = {
-    sendMail
+    sendEmail
 }

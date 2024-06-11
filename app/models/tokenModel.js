@@ -11,8 +11,16 @@ const tokenSchema = new Schema({
         type: String,
         required: true
     },
+    expiry_time: {
+        type: Date,
+    },
     token_expired: {
         type: Boolean,
+        default: false,
+    },
+    is_used: {
+        type: Boolean,
+        default: false
     }
 }, {timestamps: true})
 

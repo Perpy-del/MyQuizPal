@@ -11,6 +11,8 @@ const hash = require('../utilities/hash');
 const jwt = require('jsonwebtoken');
 const { addSeconds, getTime, formatISO } = require('date-fns');
 const { generateRandomToken } = require('../utilities/generateRandomToken');
+const Token = require('../models/tokenModel');
+const mailService = require('../utilities/sendMail');
 
 async function registerAdmin(adminData) {
   const existingAdmin = await Admin.findOne({ email: adminData.email });
@@ -288,8 +290,41 @@ async function resetPassword(email) {
     throw new NotFoundError('User with the provided credentials does not exist')
   }
 
+  const existingToken = Token.findOne({ user_id: existingUser.id });
+
+  if (!existingToken.token_expired || !existingToken.is_used) {
+    existingToken.token_expired = true;
+    existingToken.is_used = true;
+  }
+
   const tokenResult = generateRandomToken()
-  return tokenResult;
+
+  const token = await Token.create({
+    user_id: existingUser.id,
+    password_token: tokenResult.passwordToken,
+    expiry_time: tokenResult.expiryTime
+  })
+
+  await mailService.sendEmail(email, "MyQuizPal Password Request", {
+    name: `${existingUser.first_name} ${existingUser.last_name}`,
+    token: tokenResult.passwordToken
+  }, "./templates/passwordReset.handlebars")
+
+  const { user_id, password_token, expiry_time, is_used, token_expired } = token;
+
+  const data = {
+    userId: user_id,
+    passwordToken: password_token,
+    expiryTime: expiry_time,
+    isUsed: is_used,
+    tokenExpired: token_expired
+  }
+
+  return data;
+}
+
+async function sendPasswordToken() {
+  
 }
 
 module.exports = {

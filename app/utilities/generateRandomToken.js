@@ -2,7 +2,7 @@ const { randomInt } = require('node:crypto');
 const { add, isAfter } = require('date-fns');
 
 function generateRandomToken() {
-    const passwordToken = randomInt(10000, 99999);
+    const passwordToken = randomInt(1000, 9999);
 
     const now = new Date();
     const expiryTime = add(now, { minutes: 5 });
