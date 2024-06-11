@@ -8,8 +8,7 @@ const BadUserRequestError = require('../errors/BadUserRequestError');
 const AuthenticationError = require('../errors/AuthenticationError');
 const hash = require('../utilities/hash');
 const jwt = require('jsonwebtoken');
-const { addSeconds, getTime, format, formatISO } = require('date-fns');
-const { createNewTeacher } = require('../http/controllers/authenticationController');
+const { addSeconds, getTime, formatISO } = require('date-fns');
 
 async function registerAdmin(adminData) {
   const existingAdmin = await Admin.findOne({ email: adminData.email });
@@ -277,7 +276,17 @@ async function loginUser(userData) {
 }
 
 async function resetPassword(email) {
+  const existingAdmin = await Admin.findOne({email: email});
+  const existingTeacher = await Teacher.findOne({email: email});
+  const existingStudent = await Student.findOne({email: email});
 
+  const existingUser = existingAdmin || existingTeacher || existingStudent;
+
+  if (!existingUser) {
+    throw new NotFoundError('User with the provided credentials does not exist')
+  }
+
+  
 }
 
 // async function loginTeacher(teacherData) {

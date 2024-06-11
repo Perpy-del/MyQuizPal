@@ -1,9 +1,8 @@
 const Joi = require('joi');
 
-function loginValidator(request, response, next) {
+function resetPasswordValidator(request, response, next) { 
     const schema = Joi.object({
         email: Joi.string().trim().required().email(),
-        password: Joi.string().trim().required(),
     })
 
     const { error } = schema.validate(request.body, { abortEarly: false });
@@ -30,4 +29,4 @@ function loginValidator(request, response, next) {
     next()
 }
 
-module.exports = loginValidator;
+module.exports = resetPasswordValidator;
