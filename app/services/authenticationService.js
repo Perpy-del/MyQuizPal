@@ -413,6 +413,103 @@ async function sendPasswordToken(token, userId) {
   return updatedToken;
 }
 
+async function resendToken(userId) {
+  const existingAdmin = await Admin.findOne({ id: userId });
+  const existingTeacher = await Teacher.findOne({ id: userId });
+  const existingStudent = await Student.findOne({ id: userId });
+
+  const existingUser = existingAdmin || existingTeacher || existingStudent;
+
+  if (!existingUser) {
+    throw new AuthenticationError("Invalid credentials")
+  }
+
+  const {passwordToken, expiryTime} = generateRandomToken();
+
+  const token = await Token.create({
+    user_id: existingUser.id,
+    password_token: passwordToken,
+    expiry_time: expiryTime,
+  })
+
+  await mailService.sendEmail(
+    existingUser.email,
+    'MyQuizPal Password Request',
+    {
+      name: `${existingUser.first_name} ${existingUser.last_name}`,
+      token: passwordToken,
+    },
+    './templates/passwordReset.handlebars'
+  );
+
+  const { user_id, password_token, expiry_time, is_used, token_expired } =
+    token;
+
+  const data = {
+    userId: user_id,
+    passwordToken: password_token,
+    expiryTime: expiry_time,
+    isUsed: is_used,
+    tokenExpired: token_expired,
+  };
+
+  return data;
+}
+
+async function updatePassword(user) {
+  const existingAdmin = await Admin.findOne({ id: user.id });
+  const existingTeacher = await Teacher.findOne({ id: user.id });
+  const existingStudent = await Student.findOne({ id: user.id });
+
+  const existingUser = existingAdmin || existingTeacher || existingStudent;
+
+  console.log("EXISTING USER: ", existingUser);
+
+  if (!existingUser) {
+    throw new AuthenticationError("Invalid credentials")
+  }
+
+  if (!user.secretKey) {
+    throw new AuthenticationError("Invalid password reset request");
+  }
+
+  if (user.secretKey !== process.env.PASSWORD_SECRET_KEY) {
+    throw new AuthenticationError("Invalid password reset request");
+  }
+
+  if (user.password !== user.confirmPassword) {
+    throw new BadUserRequestError("Password and confirm password do not match");
+  }
+
+  const passwordHash = hash.hashPassword(user.password);
+
+  existingUser.password = passwordHash;
+
+  await existingUser.save();
+
+  await mailService.sendEmail(
+    existingUser.email,
+    'Your Password Has Been Updated',
+    {
+      name: `${existingUser.first_name} ${existingUser.last_name}`,
+    },
+    './templates/passwordChange.handlebars'
+  );
+
+  const {id, email, first_name, last_name, phone_number} = existingUser;
+
+  const data = {
+    userId: id,
+    email: email,
+    firstName: first_name,
+    lastName: last_name,
+    phoneNumber: phone_number
+  }
+
+  return data;
+
+}
+
 module.exports = {
   registerAdmin,
   registerTeacher,
@@ -421,4 +518,6 @@ module.exports = {
   loginUser,
   resetPassword,
   sendPasswordToken,
+  resendToken,
+  updatePassword
 };
