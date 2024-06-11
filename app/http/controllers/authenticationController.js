@@ -92,6 +92,23 @@ async function passwordResetRequest(request, response) {
   }
 }
 
+async function tokenValidateRequest(request, response) {
+  try {
+    const result = await service.sendPasswordToken(request.body.token, request.body.userId)
+
+    response.json({
+      message: 'Token validated successfully',
+      data: result
+    })
+  } catch (error) {
+    console.log('Error querying database: ', error);
+
+    response
+      .status(error.statusCode ?? 500)
+      .json({ data: { error: `${error.message}` } });
+  }
+}
+
 module.exports = {
   createNewAdmin,
   addNewTeacher,
@@ -99,4 +116,5 @@ module.exports = {
   createNewStudent,
   userLoginRequest,
   passwordResetRequest,
+  tokenValidateRequest,
 };

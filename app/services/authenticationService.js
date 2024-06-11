@@ -10,7 +10,10 @@ const NotFoundError = require('../errors/NotFoundError');
 const hash = require('../utilities/hash');
 const jwt = require('jsonwebtoken');
 const { addSeconds, getTime, formatISO } = require('date-fns');
-const { generateRandomToken } = require('../utilities/generateRandomToken');
+const {
+  generateRandomToken,
+  checkIfTokenHasExpired,
+} = require('../utilities/generateRandomToken');
 const Token = require('../models/tokenModel');
 const mailService = require('../utilities/sendMail');
 
@@ -51,7 +54,17 @@ async function registerAdmin(adminData) {
     admin_id: newAdmin.id,
   });
 
-  const { id, first_name, last_name, email, role, phone_number, organisation_name, created_at, updated_at } = newAdmin;
+  const {
+    id,
+    first_name,
+    last_name,
+    email,
+    role,
+    phone_number,
+    organisation_name,
+    created_at,
+    updated_at,
+  } = newAdmin;
 
   const organisation_id = newOrganisation._id;
 
@@ -112,7 +125,15 @@ async function addTeacher(teacherData) {
     password: passwordHash,
   });
 
-  const { id, email, role, phone_number, admin_in_charge, created_at, updated_at } = newTeacher;
+  const {
+    id,
+    email,
+    role,
+    phone_number,
+    admin_in_charge,
+    created_at,
+    updated_at,
+  } = newTeacher;
 
   const data = {
     teacherId: id,
@@ -125,7 +146,7 @@ async function addTeacher(teacherData) {
     phoneNumber: phone_number,
     createdAt: created_at,
     updatedAt: updated_at,
-  }
+  };
 
   return data;
 }
@@ -161,7 +182,16 @@ async function registerTeacher(teacherData) {
     password: passwordHash,
   });
 
-  const { id, first_name, last_name, email, role, phone_number, created_at, updated_at } = newTeacher;
+  const {
+    id,
+    first_name,
+    last_name,
+    email,
+    role,
+    phone_number,
+    created_at,
+    updated_at,
+  } = newTeacher;
 
   const data = {
     teacherId: id,
@@ -172,7 +202,7 @@ async function registerTeacher(teacherData) {
     phoneNumber: phone_number,
     createdAt: created_at,
     updatedAt: updated_at,
-  }
+  };
 
   return data;
 }
@@ -208,7 +238,16 @@ async function registerStudent(studentData) {
     password: passwordHash,
   });
 
-  const { id, first_name, last_name, email, role, phone_number, created_at, updated_at } = newStudent;
+  const {
+    id,
+    first_name,
+    last_name,
+    email,
+    role,
+    phone_number,
+    created_at,
+    updated_at,
+  } = newStudent;
 
   const data = {
     studentId: id,
@@ -219,7 +258,7 @@ async function registerStudent(studentData) {
     phoneNumber: phone_number,
     createdAt: created_at,
     updatedAt: updated_at,
-  }
+  };
 
   return data;
 }
@@ -273,58 +312,105 @@ async function loginUser(userData) {
     organisationId: organisation?._id || '',
     adminInCharge: existingUser.admin_in_charge || '',
     token: token,
-    tokenExpiresAt: formatISO(expiryDate)
+    tokenExpiresAt: formatISO(expiryDate),
   };
 
   return data;
 }
 
 async function resetPassword(email) {
-  const existingAdmin = await Admin.findOne({email: email});
-  const existingTeacher = await Teacher.findOne({email: email});
-  const existingStudent = await Student.findOne({email: email});
+  const existingAdmin = await Admin.findOne({ email: email });
+  const existingTeacher = await Teacher.findOne({ email: email });
+  const existingStudent = await Student.findOne({ email: email });
 
   const existingUser = existingAdmin || existingTeacher || existingStudent;
 
   if (!existingUser) {
-    throw new NotFoundError('User with the provided credentials does not exist')
+    throw new NotFoundError(
+      'User with the provided credentials does not exist'
+    );
   }
 
   const existingToken = Token.findOne({ user_id: existingUser.id });
 
   if (!existingToken.token_expired || !existingToken.is_used) {
-    existingToken.token_expired = true;
-    existingToken.is_used = true;
+    await Token.findOneAndUpdate(existingToken, {
+      token_expired: true,
+      is_used: true,
+    });
   }
 
-  const tokenResult = generateRandomToken()
+  const tokenResult = generateRandomToken();
 
   const token = await Token.create({
     user_id: existingUser.id,
     password_token: tokenResult.passwordToken,
-    expiry_time: tokenResult.expiryTime
-  })
+    expiry_time: tokenResult.expiryTime,
+  });
 
-  await mailService.sendEmail(email, "MyQuizPal Password Request", {
-    name: `${existingUser.first_name} ${existingUser.last_name}`,
-    token: tokenResult.passwordToken
-  }, "./templates/passwordReset.handlebars")
+  await mailService.sendEmail(
+    email,
+    'MyQuizPal Password Request',
+    {
+      name: `${existingUser.first_name} ${existingUser.last_name}`,
+      token: tokenResult.passwordToken,
+    },
+    './templates/passwordReset.handlebars'
+  );
 
-  const { user_id, password_token, expiry_time, is_used, token_expired } = token;
+  const { user_id, password_token, expiry_time, is_used, token_expired } =
+    token;
 
   const data = {
     userId: user_id,
     passwordToken: password_token,
     expiryTime: expiry_time,
     isUsed: is_used,
-    tokenExpired: token_expired
-  }
+    tokenExpired: token_expired,
+  };
 
   return data;
 }
 
-async function sendPasswordToken() {
-  
+async function sendPasswordToken(token, userId) {
+  const existingToken = await Token.find({
+    password_token: token,
+    user_id: userId,
+  });
+
+  if (existingToken) {
+    console.log(existingToken.is_used)
+    if (existingToken[0]?.is_used || existingToken[0]?.token_expired) {
+      throw new AuthenticationError('Invalid or expired password token');
+    }
+  }
+
+  const expiredToken = checkIfTokenHasExpired(existingToken[0]?.expiry_time);
+
+  if (expiredToken) {
+    await Token.findOneAndUpdate(
+      {
+        password_token: token,
+        user_id: userId,
+      },
+      {
+        token_expired: true,
+      }
+    );
+    throw new AuthenticationError('Invalid or expired password token');
+  }
+
+  const updatedToken = await Token.findOneAndUpdate(
+    {
+      password_token: token,
+      user_id: userId,
+    },
+    {
+      is_used: true,
+    }
+  );
+
+  return updatedToken;
 }
 
 module.exports = {
@@ -333,5 +419,6 @@ module.exports = {
   registerStudent,
   addTeacher,
   loginUser,
-  resetPassword
+  resetPassword,
+  sendPasswordToken,
 };

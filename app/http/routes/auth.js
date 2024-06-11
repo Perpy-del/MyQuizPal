@@ -13,5 +13,6 @@ router.post('/api/register/student', registerStudentValidator, authController.cr
 router.post('/api/login', loginValidator, authController.userLoginRequest);
 router.post('/api/add-teacher', validateAdminTeacher, authController.addNewTeacher);
 router.post('/api/reset-password', resetPasswordValidator, authController.passwordResetRequest);
+router.put('/api/reset-password/verify', authController.tokenValidateRequest);
 
 module.exports = router;
