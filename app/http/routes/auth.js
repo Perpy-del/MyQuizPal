@@ -11,5 +11,6 @@ router.post('/api/register/teacher', validateAdminTeacher, authController.create
 router.post('/api/register/student', registerStudentValidator, authController.createNewStudent);
 router.post('/api/login', loginValidator, authController.userLoginRequest);
 router.post('/api/add-teacher', validateAdminTeacher, authController.addNewTeacher);
+router.post('/api/reset-password', authController.passwordResetRequest);
 
 module.exports = router;

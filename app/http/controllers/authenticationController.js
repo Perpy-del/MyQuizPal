@@ -76,10 +76,25 @@ async function userLoginRequest(request, response) {
   }
 }
 
+async function passwordResetRequest(request, response) {
+  try {
+    const result = await service.resetPassword(request.body.email);
+
+    console.log(result);
+  } catch (error) {
+    console.log('Error querying database: ', error);
+
+    response
+      .status(error.statusCode ?? 500)
+      .json({ data: { error: `${error.message}` } });
+  }
+}
+
 module.exports = {
   createNewAdmin,
   addNewTeacher,
   createNewTeacher,
   createNewStudent,
   userLoginRequest,
+  passwordResetRequest,
 };
