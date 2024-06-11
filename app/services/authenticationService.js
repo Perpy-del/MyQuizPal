@@ -296,7 +296,7 @@ async function loginUser(userData) {
   };
 
   const token = jwt.sign(payload, process.env.STAGING_APP_SECRET, {
-    issuer: process.env.DEV_JWT_ISSUER,
+    issuer: process.env.STAGING_JWT_ISSUER,
   });
 
   const data = {
