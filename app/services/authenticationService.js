@@ -36,7 +36,7 @@ async function registerAdmin(adminData) {
     );
   }
 
-  const passwordHash = hash.hashPassword(adminData.password);
+  const passwordHash = await hash.hashPassword(adminData.password);
 
   const newAdmin = await Admin.create({
     id: randomId(),
@@ -111,7 +111,7 @@ async function addTeacher(teacherData) {
     );
   }
 
-  const passwordHash = hash.hashPassword(teacherData.password);
+  const passwordHash = await hash.hashPassword(teacherData.password);
 
   const newTeacher = await Teacher.create({
     id: randomId(),
@@ -170,7 +170,7 @@ async function registerTeacher(teacherData) {
     );
   }
 
-  const passwordHash = hash.hashPassword(teacherData.password);
+  const passwordHash = await hash.hashPassword(teacherData.password);
 
   const newTeacher = await Teacher.create({
     id: randomId(),
@@ -226,7 +226,7 @@ async function registerStudent(studentData) {
     );
   }
 
-  const passwordHash = hash.hashPassword(studentData.password);
+  const passwordHash = await hash.hashPassword(studentData.password);
 
   const newStudent = await Student.create({
     id: randomId(),
@@ -274,7 +274,7 @@ async function loginUser(userData) {
     throw new AuthenticationError('User credentials do not match our records.');
   }
 
-  const passwordConfirm = hash.compareHashPassword(
+  const passwordConfirm = await hash.compareHashPassword(
     userData.password,
     existingUser.password
   );
@@ -340,7 +340,8 @@ async function resetPassword(email) {
     });
   }
 
-  const tokenResult = generateRandomToken();
+  const tokenResult = await generateRandomToken();
+  console.log("Token generated:", tokenResult);
 
   const token = await Token.create({
     user_id: existingUser.id,
@@ -424,7 +425,7 @@ async function resendToken(userId) {
     throw new AuthenticationError("Invalid credentials")
   }
 
-  const {passwordToken, expiryTime} = generateRandomToken();
+  const {passwordToken, expiryTime} = await generateRandomToken();
 
   const token = await Token.create({
     user_id: existingUser.id,
@@ -481,7 +482,7 @@ async function updatePassword(user) {
     throw new BadUserRequestError("Password and confirm password do not match");
   }
 
-  const passwordHash = hash.hashPassword(user.password);
+  const passwordHash = await hash.hashPassword(user.password);
 
   existingUser.password = passwordHash;
 

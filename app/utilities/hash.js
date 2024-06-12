@@ -1,16 +1,36 @@
 const bcrypt = require('bcrypt');
 
-function hashPassword(password) {
+async function hashPassword(password) {
     const saltRound = Number(process.env.DEV_BCRYPT_SALT_ROUND);
-    let passwordHash = bcrypt.hashSync(password, saltRound)
 
-    return passwordHash;
+    return new Promise ((resolve, reject) => {
+        bcrypt.hash(password, saltRound, function(error, hash) {
+            if (error) {
+                console.error(error);
+            }
+            try {
+                resolve(hash);                
+            } catch (error) {
+                console.log(error);
+                reject(error);
+            }
+        });
+    })
 }
 
-function compareHashPassword(password, passwordHash) {
-    let passwordMatch = bcrypt.compareSync(password, passwordHash)
-
-    return passwordMatch;
+async function compareHashPassword(password, passwordHash) {
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(password, passwordHash, function(error, result) {
+            if (error) {
+                console.error(error);
+            }
+            try {
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    })
 }
 
 module.exports = {
