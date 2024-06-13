@@ -135,6 +135,17 @@ async function addTeacher(teacherData) {
     updated_at,
   } = newTeacher;
 
+  await mailService.sendEmail(
+    email,
+    'MyQuizPal Login Details',
+    {
+      name: `${newTeacher.first_name} ${newTeacher.last_name}`,
+      email: email,
+      password: teacherData.password
+    },
+    './templates/sendLogin.handlebars'
+  );
+
   const data = {
     teacherId: id,
     firstName: newTeacher.first_name,
@@ -342,7 +353,7 @@ async function resetPassword(email) {
   }
 
   const tokenResult = await generateRandomToken();
-  console.log("Token generated:", tokenResult);
+  console.log('Token generated:', tokenResult);
 
   const token = await Token.create({
     user_id: existingUser.id,
@@ -381,7 +392,7 @@ async function sendPasswordToken(token, userId) {
   });
 
   if (existingToken) {
-    console.log(existingToken.is_used)
+    console.log(existingToken.is_used);
     if (existingToken[0]?.is_used || existingToken[0]?.token_expired) {
       throw new AuthenticationError('Invalid or expired password token');
     }
@@ -423,16 +434,16 @@ async function resendToken(userId) {
   const existingUser = existingAdmin || existingTeacher || existingStudent;
 
   if (!existingUser) {
-    throw new AuthenticationError("Invalid credentials")
+    throw new AuthenticationError('Invalid credentials');
   }
 
-  const {passwordToken, expiryTime} = await generateRandomToken();
+  const { passwordToken, expiryTime } = await generateRandomToken();
 
   const token = await Token.create({
     user_id: existingUser.id,
     password_token: passwordToken,
     expiry_time: expiryTime,
-  })
+  });
 
   await mailService.sendEmail(
     existingUser.email,
@@ -465,22 +476,22 @@ async function updatePassword(user) {
 
   const existingUser = existingAdmin || existingTeacher || existingStudent;
 
-  console.log("EXISTING USER: ", existingUser);
+  console.log('EXISTING USER: ', existingUser);
 
   if (!existingUser) {
-    throw new AuthenticationError("Invalid credentials")
+    throw new AuthenticationError('Invalid credentials');
   }
 
   if (!user.secretKey) {
-    throw new AuthenticationError("Invalid password reset request");
+    throw new AuthenticationError('Invalid password reset request');
   }
 
   if (user.secretKey !== process.env.PASSWORD_SECRET_KEY) {
-    throw new AuthenticationError("Invalid password reset request");
+    throw new AuthenticationError('Invalid password reset request');
   }
 
   if (user.password !== user.confirmPassword) {
-    throw new BadUserRequestError("Password and confirm password do not match");
+    throw new BadUserRequestError('Password and confirm password do not match');
   }
 
   const passwordHash = await hash.hashPassword(user.password);
@@ -498,18 +509,17 @@ async function updatePassword(user) {
     './templates/passwordChange.handlebars'
   );
 
-  const {id, email, first_name, last_name, phone_number} = existingUser;
+  const { id, email, first_name, last_name, phone_number } = existingUser;
 
   const data = {
     userId: id,
     email: email,
     firstName: first_name,
     lastName: last_name,
-    phoneNumber: phone_number
-  }
+    phoneNumber: phone_number,
+  };
 
   return data;
-
 }
 
 module.exports = {
@@ -521,5 +531,5 @@ module.exports = {
   resetPassword,
   sendPasswordToken,
   resendToken,
-  updatePassword
+  updatePassword,
 };
