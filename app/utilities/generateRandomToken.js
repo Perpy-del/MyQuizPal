@@ -1,4 +1,4 @@
-const { randomInt } = require('node:crypto');
+const { randomInt, randomBytes } = require('node:crypto');
 const { add, isAfter } = require('date-fns');
 
 function generateRandomToken() {
@@ -24,7 +24,18 @@ function checkIfTokenHasExpired(expiryTime) {
   return isAfter(now, expiryTime);
 }
 
+function generateAccessCode() {
+  return new Promise((resolve, reject) => {
+    randomBytes(3, (error, buffer) => {
+      if (error) {reject(error)};
+      const code = buffer.toString('hex');
+      resolve(code);
+    });
+  })
+}
+
 module.exports = {
   generateRandomToken,
   checkIfTokenHasExpired,
+  generateAccessCode
 };

@@ -7,6 +7,7 @@ require('dotenv').config();
 const connectToDb = require('../config/database')
 
 const authRouter = require('./http/routes/auth');
+const assessmentRouter = require('./http/routes/assessment');
 
 connectToDb();
 
@@ -23,5 +24,6 @@ app.get('/api', function(req, res) {
   });
 
 app.use(authRouter);
+app.use(assessmentRouter);
 
 module.exports = app;
