@@ -11,13 +11,15 @@ const mailService = require('../utilities/sendMail');
 // const questions = require('../../storage/database/data');
 
 async function sendAssessment(assessmentData) {
-  const existingTeacher = await Teacher.findOne({ id: assessmentData.teacherId });
+  const existingTeacher = await Teacher.findOne({
+    id: assessmentData.teacherId,
+  });
 
   if (!existingTeacher) {
     throw new ResourceExists('User details does not exist');
   }
 
-  const teacherName = `${existingTeacher.first_name} ${existingTeacher.last_name}`
+  const teacherName = `${existingTeacher.first_name} ${existingTeacher.last_name}`;
   const accessCode = await generateAccessCode();
 
   const newAssessment = await Assessment.create({
@@ -35,7 +37,7 @@ async function sendAssessment(assessmentData) {
     assessment_id: newAssessment._id,
   }));
 
-  const savedQuestions = await Question.insertMany(questionDocuments)
+  const savedQuestions = await Question.insertMany(questionDocuments);
 
   const data = {
     id: newAssessment.id,
@@ -46,8 +48,8 @@ async function sendAssessment(assessmentData) {
     timeForTest: newAssessment.time_for_test,
     questions: savedQuestions,
     createdAt: newAssessment.createdAt,
-    updatedAt: newAssessment.updatedAt
-  }
+    updatedAt: newAssessment.updatedAt,
+  };
 
   return data;
 }
@@ -59,15 +61,17 @@ async function retrieveAssessmentByTeacher(assessmentId, teacherId) {
     throw new ResourceExists('User details does not exist');
   }
 
-  const existingAssessment = await Assessment.findById({_id: assessmentId});
+  const existingAssessment = await Assessment.findById({ _id: assessmentId });
 
-  const assessmentQuestions = await Question.find({assessment_id: existingAssessment._id})
+  const assessmentQuestions = await Question.find({
+    assessment_id: existingAssessment._id,
+  });
 
   const data = {
     subject: existingAssessment.subject,
     dateCreated: existingAssessment.updatedAt,
-    questions: assessmentQuestions
-  }
+    questions: assessmentQuestions,
+  };
 
   return data;
 }
@@ -79,7 +83,9 @@ async function retrieveAllAssessments(teacherId) {
     throw new ResourceExists('User details does not exist');
   }
 
-  const teacherAssessments = await Assessment.find({ teacher_id: teacherId }).populate({
+  const teacherAssessments = await Assessment.find({
+    teacher_id: teacherId,
+  }).populate({
     path: 'questions', // Path to populate
     model: 'Question', // Model to use for population
   });
@@ -99,7 +105,9 @@ async function sendAssessmentCode(teacherId, email) {
     throw new ResourceExists('Student details does not exist');
   }
 
-  const existingAssessment = await Assessment.findOne({ teacher_id: teacherId });
+  const existingAssessment = await Assessment.findOne({
+    teacher_id: teacherId,
+  });
 
   const { first_name, last_name } = existingStudent;
 
@@ -123,16 +131,22 @@ async function retrieveAssessmentByStudent(studentId, accessCode) {
     throw new ResourceExists('Student details does not exist');
   }
 
-  const existingAssessment = await Assessment.findOne({ code: accessCode }).populate({
+  const existingAssessment = await Assessment.findOne({
+    code: accessCode,
+  }).populate({
     path: 'questions',
-    model: 'Question'
+    model: 'Question',
   });
 
   if (!existingAssessment) {
-    throw new ResourceExists('Wrong access code. Please verify the code and try again.')
+    throw new ResourceExists(
+      'Wrong access code. Please verify the code and try again.'
+    );
   }
 
-  const existingTeacher = await Teacher.findOne({ id: existingAssessment.teacher_id });
+  const existingTeacher = await Teacher.findOne({
+    id: existingAssessment.teacher_id,
+  });
 
   const data = {
     assessmentId: existingAssessment._id,
@@ -140,8 +154,8 @@ async function retrieveAssessmentByStudent(studentId, accessCode) {
     teacherName: `${existingTeacher?.first_name} ${existingTeacher?.last_name}`,
     timeForTest: existingAssessment.time_for_test,
     DateCreated: existingAssessment.updatedAt,
-    questions: existingAssessment.questions
-  }
+    questions: existingAssessment.questions,
+  };
 
   return data;
 }
@@ -179,11 +193,10 @@ async function updateAssessment(assessmentId, data) {
 
   const dataResults = {
     updatedAssessment: updatedAssessment,
-    updatedQuestions: updatedQuestions
-  }
+    updatedQuestions: updatedQuestions,
+  };
 
   return dataResults;
-
 }
 
 async function deleteAssessment(assessmentId, teacherId) {
@@ -196,21 +209,48 @@ async function deleteAssessment(assessmentId, teacherId) {
   const existingAssessment = await Assessment.findById({ _id: assessmentId });
 
   if (!existingAssessment) {
-    throw new ResourceExists("Assessment details does not exist");
+    throw new ResourceExists('Assessment details does not exist');
   }
-  const questions = await Question.deleteMany({ assessment_id: existingAssessment._id });
+  const questions = await Question.deleteMany({
+    assessment_id: existingAssessment._id,
+  });
 
   const deleted = await Assessment.findByIdAndDelete({ _id: assessmentId });
 
   return { questions, deleted };
 }
 
-module.exports = {
-    sendAssessment,
-    retrieveAssessmentByTeacher,
-    retrieveAllAssessments,
-    sendAssessmentCode,
-    retrieveAssessmentByStudent,
-    updateAssessment,
-    deleteAssessment
+async function updateAccessCode(assessmentId, teacherId) {
+  const existingTeacher = await Teacher.findOne({ id: teacherId });
+
+  if (!existingTeacher) {
+    throw new ResourceExists("Teacher's details does not exist");
+  }
+
+  const existingAssessment = await Assessment.findById({ _id: assessmentId });
+
+  if (!existingAssessment) {
+    throw new ResourceExists('Assessment details does not exist');
+  }
+
+  const accessCode = await generateAccessCode();
+
+  const updatedAssessment = await Assessment.findByIdAndUpdate(
+    { _id: assessmentId },
+    { code: accessCode },
+    { new: true }
+  );
+
+  return updatedAssessment;
 }
+
+module.exports = {
+  sendAssessment,
+  retrieveAssessmentByTeacher,
+  retrieveAllAssessments,
+  sendAssessmentCode,
+  retrieveAssessmentByStudent,
+  updateAssessment,
+  deleteAssessment,
+  updateAccessCode,
+};

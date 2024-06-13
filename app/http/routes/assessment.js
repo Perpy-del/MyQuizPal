@@ -6,6 +6,7 @@ const validateAssessment = require('../middlewares/assessmentMiddlewares/assessm
 const validateSendAssessmentCode = require('../middlewares/assessmentMiddlewares/sendAssessmentMailValidator');
 const validateStudentCode = require('../middlewares/assessmentMiddlewares/getStudentAssessmentValidator');
 const validateUpdateAssessment = require('../middlewares/assessmentMiddlewares/updateAssessmentValidator');
+
 const assessmentController = require('../controllers/assessmentController');
 
 // Create a new assessment
@@ -62,6 +63,14 @@ router.delete(
   authMiddleware,
   validateAssessment,
   assessmentController.deleteAssessmentDetails
+);
+
+// update assessment code
+router.put(
+  '/api/assessment/code/:assessment_id',
+  authMiddleware,
+  validateAssessment,
+  assessmentController.updateAssessmentCode
 );
 
 module.exports = router;
