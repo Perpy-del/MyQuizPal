@@ -7,6 +7,7 @@ const registerStudentValidator = require('../middlewares/authenticationMiddlewar
 const loginValidator = require('../middlewares/authenticationMiddlewares/loginValidator');
 const resetPasswordValidator = require('../middlewares/authenticationMiddlewares/resetPasswordValidator');
 const passwordChangeValidator = require('../middlewares/authenticationMiddlewares/passwordChangeValidator');
+const authMiddleware = require('../middlewares/authenticationMiddlewares/authMiddleware');
 
 // endpoint to register an admin/representative of a school or organisation
 router.post(
@@ -18,6 +19,7 @@ router.post(
 // endpoint to register a teacher outside an organization
 router.post(
   '/api/register/teacher',
+  authMiddleware,
   validateAdminTeacher,
   authController.createNewTeacher
 );
