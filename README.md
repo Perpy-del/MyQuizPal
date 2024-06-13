@@ -6,7 +6,7 @@ This is a software built for students and teachers to create and take quizzes wi
 
 This repository contains the source code for the MyQuizPal application. The server itself is implemented in node using express. Follow the instructions below to set up the codebase on your local machine.
 
-### Here is the [API Documentation]()
+### Here is the [API Documentation](https://documenter.getpostman.com/view/26756602/2sA3XMj3dx)
 
 # Table of Contents
 
@@ -53,7 +53,7 @@ Before setting up the codebase, make sure you have the following prerequisites i
 2. Change into the project directory:
 
 ```bash
-   cd sca_ass_seven
+   cd MyQuizPal
 ```
 
 3. Install the required dependencies:
@@ -79,6 +79,46 @@ The codebase requires the following environment configurations:
 
 ```bash
 
+PORT=my_port
+
+
+# ==================================== DATABASE ================================================
+
+# DEVELOPMENT
+DEV_MONGODB_URL=my_dev_mongo_url
+DEV_BCRYPT_SALT_ROUND=my_dev_bcrypt_salt_round
+
+# STAGING
+STAGING_MONGODB_URL=my_staging_mongo_url
+
+
+# ==================================== JWT ==================================================
+
+JWT_EXPIRATION=my_jwt_expiration
+
+# DEVELOPMENT
+DEV_APP_SECRET=my_dev_app_secret
+DEV_JWT_ISSUER=my_dev_jwt_issuer
+
+# STAGING
+STAGING_APP_SECRET=my_staging_app_secret
+STAGING_JWT_PUBLIC_FILE=my_staging_jwt_public_file
+STAGING_JWT_PRIVATE_FILE=my_staging_jwt_private_file
+STAGING_JWT_ISSUER=my_staging_jwt_issuer
+
+
+# ==================================== NODEMAILER ================================================
+
+NODEMAILER_SERVICE=my_nodemailer_service
+NODEMAILER_HOST=my_nodemailer_host
+NODEMAILER_PORT=my_nodemailer_port
+NODEMAILER_USER=my_nodemailer_user
+NODEMAILER_APP_PASSWORD=my_nodemailer_app_passwd
+
+# ==================================== AUTH ==================================
+
+PASSWORD_SECRET_KEY=my_password_secret_key
+
 ```
 
 You can also copy the variables from the `.env.example` file.
@@ -92,12 +132,15 @@ The codebase follows the following directory structure:
 ```bash
 myquizpal/
 └───app
-    ├───controllers
+    ├───http
+        ├───controllers
+        ├───middlewares
+        ├───routes
     ├───errors
-    ├───middlewares
-    ├───model
-    ├───routes
-    ├───utils
+    ├───services
+    ├───models
+    ├───utilities
+        ├───templates
     ├───services
     ├───utilities
 └───config
@@ -118,28 +161,9 @@ npm start
 
 Visit `http://localhost:PORT` in your web browser to access the application.
 
-## API Documentation
-
-**[Back to Table of Contents]()**
-
-API Documentation for the application
-
 **Base URL**
 Main URL
-https://localhost:HOST
-
-**NOTE**
-
-- Client-Server data transfer (parameters as used in this documentation) should be via the standard JSON format
-
-### ROUTES
-
-
-## Postman Documentation
-
-**[Back to Table of Contents]()**
-
-- If you would rather use the postman documentation and find it easier to read and understand, here is the [PostmanDocs]()
+https://myquizpal.onrender.com/api
 
 ## MyQuizPal Application
 
