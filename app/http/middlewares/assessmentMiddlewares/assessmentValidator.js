@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-function getAssessmentValidator(request, response, next) {
+function assessmentValidator(request, response, next) {
   const schema = Joi.object({
     teacherId: Joi.string().required(),
   });
@@ -29,4 +29,4 @@ function getAssessmentValidator(request, response, next) {
   next();
 }
 
-module.exports = getAssessmentValidator;
+module.exports = assessmentValidator;

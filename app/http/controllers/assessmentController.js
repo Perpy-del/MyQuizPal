@@ -87,6 +87,20 @@ async function updateAssessmentDetails(request, response) {
   }
 }
 
+async function deleteAssessmentDetails(request, response) {
+  try {
+    await service.deleteAssessment(request.params.assessment_id, request.body.teacherId);
+
+    response.json({ message: "Assessment Deleted Successfully" });
+  } catch (error) {
+    console.log('Error querying database: ', error);
+
+    response
+      .status(error.statusCode ?? 500)
+      .json({ data: { error: `${error.message}` } });
+  }
+}
+
 module.exports = {
   postAssessment,
   getAssessment,
@@ -94,5 +108,5 @@ module.exports = {
   sendAccessCodeToStudent,
   getAssessmentByCode,
   updateAssessmentDetails,
-  
+  deleteAssessmentDetails
 };

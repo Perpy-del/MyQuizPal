@@ -186,13 +186,24 @@ async function updateAssessment(assessmentId, data) {
 
 }
 
-// async function deleteAssessment(assessmentId, teacherId) {
-//   const existingTeacher = await Teacher.findOne({ id: data.teacherId });
+async function deleteAssessment(assessmentId, teacherId) {
+  const existingTeacher = await Teacher.findOne({ id: teacherId });
 
-//   if (!existingTeacher) {
-//     throw new ResourceExists("Teacher's details does not exist");
-//   }
-// }
+  if (!existingTeacher) {
+    throw new ResourceExists("Teacher's details does not exist");
+  }
+
+  const existingAssessment = await Assessment.findById({ _id: assessmentId });
+
+  if (!existingAssessment) {
+    throw new ResourceExists("Assessment details does not exist");
+  }
+  const questions = await Question.deleteMany({ assessment_id: existingAssessment._id });
+
+  const deleted = await Assessment.findByIdAndDelete({ _id: assessmentId });
+
+  return { questions, deleted };
+}
 
 module.exports = {
     sendAssessment,

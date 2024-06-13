@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middlewares/authenticationMiddlewares/authMiddleware');
 const validatePostAssessment = require('../middlewares/assessmentMiddlewares/postAssessmentValidator');
-const validateGetAssessment = require('../middlewares/assessmentMiddlewares/getAssessmentValidator');
+const validateAssessment = require('../middlewares/assessmentMiddlewares/assessmentValidator');
 const validateSendAssessmentCode = require('../middlewares/assessmentMiddlewares/sendAssessmentMailValidator');
 const validateStudentCode = require('../middlewares/assessmentMiddlewares/getStudentAssessmentValidator');
 const validateUpdateAssessment = require('../middlewares/assessmentMiddlewares/updateAssessmentValidator');
@@ -20,7 +20,7 @@ router.post(
 router.get(
   '/api/assessment/:assessment_id',
   authMiddleware,
-  validateGetAssessment,
+  validateAssessment,
   assessmentController.getAssessment
 );
 
@@ -28,7 +28,7 @@ router.get(
 router.get(
   '/api/assessments',
   authMiddleware,
-  validateGetAssessment,
+  validateAssessment,
   assessmentController.getAllAssessments
 );
 
@@ -54,6 +54,14 @@ router.put(
   authMiddleware,
   validateUpdateAssessment,
   assessmentController.updateAssessmentDetails
+);
+
+// delete assessment
+router.delete(
+  '/api/assessment/:assessment_id',
+  authMiddleware,
+  validateAssessment,
+  assessmentController.deleteAssessmentDetails
 );
 
 module.exports = router;
