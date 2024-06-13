@@ -192,3 +192,5 @@ This codebase is released under the GNU General Public License(GPL). Please see 
 
 The MyQuizPal App codebase is being developed by:
 - [Perpetual Meninwa](https://github.com/Perpy-del)
+- [Perpetual Meninwa's Portfolio](https://pm-portfolio-drab.vercel.app/)
+- [Perpetual Meninwa's LinkedIn](https://linkedin.com/in/perpydev/)
