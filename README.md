@@ -10,31 +10,27 @@ This repository contains the source code for the MyQuizPal application. The serv
 
 # Table of Contents
 
-- ### [Prerequisites]()
+- ### [Prerequisites](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#prerequisites-1)
 
-- ### [Installation]()
+- ### [Installation](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#installation-1)
 
-- ### [Configuration]()
+- ### [Configuration](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#configuration-1)
 
-- ### [Directory Structure]()
+- ### [Directory Structure](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#directory-structure-1)
 
-- ### [Usage]()
+- ### [Usage](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#usage-1)
 
-- ### [API Documentation]()    
+- ### [Troubleshooting](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#troubleshooting-1)
 
-- ### [Postman Documentation]()
+- ### [Project Status](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#project-status-1)
 
-- ### [Troubleshooting]()
+- ### [License](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#license-1)
 
-- ### [Project Status]()
-
-- ### [License]()
-
-- ### [Credits]()
+- ### [Credits](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#credits-1)
 
 ## Prerequisites
 
-**[Back to Table of Contents]()**
+**[Back to Table of Contents](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#table-of-contents)**
 
 Before setting up the codebase, make sure you have the following prerequisites installed:
 
@@ -44,7 +40,7 @@ Before setting up the codebase, make sure you have the following prerequisites i
 
 ## Installation
 
-**[Back to Table of Contents]()**
+**[Back to Table of Contents](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#table-of-contents)**
 
 1. Clone the repository using Git:
    ```bash
@@ -70,7 +66,7 @@ Before setting up the codebase, make sure you have the following prerequisites i
 
 ## Configuration
 
-**[Back to Table of Contents]()**
+**[Back to Table of Contents](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#table-of-contents)**
 
 The codebase requires the following environment configurations:
 
@@ -125,7 +121,7 @@ You can also copy the variables from the `.env.example` file.
 
 ## Directory Structure
 
-**[Back to Table of Contents]()**
+**[Back to Table of Contents](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#table-of-contents)**
 
 The codebase follows the following directory structure:
 
@@ -153,7 +149,7 @@ myquizpal/
 
 ## Usage
 
-**[Back to Table of Contents]()**
+**[Back to Table of Contents](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#table-of-contents)**
 
 To start the MyQuizPal application on your local environment, run the following command:
 
@@ -169,30 +165,30 @@ https://myquizpal.onrender.com/api
 
 - This is the link of the deployed application on the frontend. [MyQuizPal]()
 
-![Screenshot of MyQuizPal App]()
+![Screenshot of MyQuizPal App](./image/quizpal.png)
 
 ## Troubleshooting
 
-**[Back to Table of Contents]()**
+**[Back to Table of Contents](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#table-of-contents)**
 
 - If you encounter any issues during the setup process, please ensure that you have the latest versions of Node.js and MongoDB installed.
 - If the application fails to start, make sure the MongoDB server is running and accessible.
 
 ## Project Status
 
-**[Back to Table of Contents]()**
+**[Back to Table of Contents](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#table-of-contents)**
 
 This app is currently developed and maintained by me. The project is primarily for personal use or demonstration purposes.
 
 ## License
 
-**[Back to Table of Contents]()**
+**[Back to Table of Contents](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#table-of-contents)**
 
 This codebase is released under the GNU General Public License(GPL). Please see the LICENSE.md file for more details.
 
 ## Credits
 
-**[Back to Table of Contents]()**
+**[Back to Table of Contents](https://github.com/Perpy-del/MyQuizPal?tab=readme-ov-file#table-of-contents)**
 
 The MyQuizPal App codebase is being developed by:
 - [Perpetual Meninwa](https://github.com/Perpy-del)
