@@ -1,11 +1,8 @@
 const Joi = require('joi');
 
-function postAssessmentValidator(request, response, next) {
+function getAssessmentValidator(request, response, next) {
   const schema = Joi.object({
-    subject: Joi.string().trim().required(),
-    teacher_id: Joi.string().required(),
-    time_for_test: Joi.string().trim().required(),
-    questions: Joi.any(),
+    teacherId: Joi.string().required(),
   });
 
   const { error } = schema.validate(request.body, { abortEarly: false });
@@ -32,4 +29,4 @@ function postAssessmentValidator(request, response, next) {
   next();
 }
 
-module.exports = postAssessmentValidator;
+module.exports = getAssessmentValidator;
