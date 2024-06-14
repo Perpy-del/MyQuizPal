@@ -122,6 +122,7 @@ async function sendAssessmentCode(teacherId, email, assessment_id) {
     {
       name: `${first_name} ${last_name}`,
       code: existingAssessment.code,
+      subject: existingAssessment.subject,
     },
     './templates/studentAssessment.handlebars'
   );

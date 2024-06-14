@@ -163,7 +163,7 @@ https://myquizpal.onrender.com/api
 
 ## MyQuizPal Application
 
-- This is the link of the deployed application on the frontend. [MyQuizPal]()
+- This is the link of the deployed application on the frontend. [MyQuizPal](https://my-quiz-pal.vercel.app/)
 
 ![Screenshot of MyQuizPal App](./image/quizpal.png)
 
