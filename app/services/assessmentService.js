@@ -93,7 +93,7 @@ async function retrieveAllAssessments(teacherId) {
   return teacherAssessments;
 }
 
-async function sendAssessmentCode(teacherId, email) {
+async function sendAssessmentCode(teacherId, email, assessment_id) {
   const existingTeacher = await Teacher.findOne({ id: teacherId });
   const existingStudent = await Student.findOne({ email: email });
 
@@ -107,7 +107,12 @@ async function sendAssessmentCode(teacherId, email) {
 
   const existingAssessment = await Assessment.findOne({
     teacher_id: teacherId,
+    id: assessment_id
   });
+
+  if (!existingAssessment) {
+    throw new ResourceExists('Assessment details does not exist');
+  }
 
   const { first_name, last_name } = existingStudent;
 

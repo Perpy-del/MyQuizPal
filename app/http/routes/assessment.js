@@ -35,7 +35,7 @@ router.get(
 
 // send assessment code to student
 router.post(
-  '/api/assessment/send-code',
+  '/api/assessment/send-code/:assessment_id',
   authMiddleware,
   validateSendAssessmentCode,
   assessmentController.sendAccessCodeToStudent

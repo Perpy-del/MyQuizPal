@@ -44,7 +44,7 @@ async function getAllAssessments(request, response) {
 
 async function sendAccessCodeToStudent(request, response) {
   try {
-    const results = await service.sendAssessmentCode(request.body.teacherId, request.body.email);
+    const results = await service.sendAssessmentCode(request.body.teacherId, request.body.email, request.params.assessment_id);
 
     response.json({ 
         message: "Access code sent to student successfully",
