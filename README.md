@@ -137,8 +137,6 @@ myquizpal/
     ├───models
     ├───utilities
         ├───templates
-    ├───services
-    ├───utilities
 └───config
 └───storage
 ```
